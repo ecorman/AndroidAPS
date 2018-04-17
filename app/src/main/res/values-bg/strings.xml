@@ -586,7 +586,7 @@
     <string name="careportal_newnstreatment_duration_min_label">Продължителност [мин.]</string>
     <string name="careportal_pump_label">ПОМПА</string>
     <string name="date">Дата</string>
-    <string name="dia_too_short" formatted="false">DIA от %s е твърде кратка - използвай %s вместо това!</string>
+    <string name="dia_too_short" formatted="false">DIA от %f е твърде кратка - използвай %f вместо това!</string>
     <string name="free_peak_oref">Със свободен пик по Oref</string>
     <string name="insulin_oref_peak">Пик на кривата на IOB</string>
     <string name="insulin_peak_time">Време на пик [мин.]</string>
@@ -678,9 +678,6 @@
     <string name="shortenergy">En</string>
     <string name="raise_notifications_as_android_notifications">Използвай системни известия за аларми и съобщения</string>
     <string name="combo_warning">Внимание</string>
-    <string name="combo_tdd_minimum" formatted="false">Минимум: %3.1f U</string>
-    <string name="combo_tdd_maximum" formatted="false">Максимум: %3.1f U</string>
-    <string name="combo_tdd_average" formatted="false">Средно: %3.1f U</string>
     <string name="combo_reservoir_normal">Нормално</string>
     <string name="combo_reservoir_low">Ниско</string>
     <string name="combo_reservoir_level_insufficient_for_bolus">Няма достатъчно инсулин в резервоара</string>

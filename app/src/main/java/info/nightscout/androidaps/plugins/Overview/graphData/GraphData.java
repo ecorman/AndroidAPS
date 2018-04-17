@@ -23,11 +23,10 @@ import info.nightscout.androidaps.db.CareportalEvent;
 import info.nightscout.androidaps.db.ExtendedBolus;
 import info.nightscout.androidaps.db.ProfileSwitch;
 import info.nightscout.androidaps.db.TempTarget;
-import info.nightscout.androidaps.db.Treatment;
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
 import info.nightscout.androidaps.plugins.IobCobCalculator.AutosensData;
-import info.nightscout.androidaps.plugins.IobCobCalculator.IobCobCalculatorPlugin;
 import info.nightscout.androidaps.plugins.IobCobCalculator.BasalData;
+import info.nightscout.androidaps.plugins.IobCobCalculator.IobCobCalculatorPlugin;
 import info.nightscout.androidaps.plugins.Loop.APSResult;
 import info.nightscout.androidaps.plugins.Loop.LoopPlugin;
 import info.nightscout.androidaps.plugins.Overview.graphExtensions.AreaGraphSeries;
@@ -38,6 +37,7 @@ import info.nightscout.androidaps.plugins.Overview.graphExtensions.PointsWithLab
 import info.nightscout.androidaps.plugins.Overview.graphExtensions.Scale;
 import info.nightscout.androidaps.plugins.Overview.graphExtensions.ScaledDataPoint;
 import info.nightscout.androidaps.plugins.Overview.graphExtensions.TimeAsXAxisLabelFormatter;
+import info.nightscout.androidaps.plugins.Treatments.Treatment;
 import info.nightscout.androidaps.plugins.Treatments.TreatmentsPlugin;
 import info.nightscout.utils.Round;
 
@@ -172,7 +172,7 @@ public class GraphData {
             lastAbsoluteLineBasal = absoluteLineValue;
             lastLineBasal = baseBasalValue;
             lastTempBasal = tempBasalValue;
-            maxBasalValueFound = Math.max(maxBasalValueFound, basal);
+            maxBasalValueFound = Math.max(maxBasalValueFound, Math.max(tempBasalValue, baseBasalValue));
         }
 
         basalLineArray.add(new ScaledDataPoint(toTime, lastLineBasal, basalScale));
@@ -242,7 +242,7 @@ public class GraphData {
             TempTarget tt = TreatmentsPlugin.getPlugin().getTempTargetFromHistory(time);
             double value;
             if (tt == null) {
-                value = (profile.getTargetLow(time) + profile.getTargetHigh(time))  / 2;
+                value = (profile.getTargetLow(time) + profile.getTargetHigh(time)) / 2;
             } else {
                 value = tt.target();
                 value = Profile.fromMgdlToUnits(value, profile.getUnits());
@@ -268,7 +268,7 @@ public class GraphData {
     public void addTreatments(long fromTime, long endTime) {
         List<DataPointWithLabelInterface> filteredTreatments = new ArrayList<>();
 
-        List<Treatment> treatments = MainApp.getConfigBuilder().getTreatmentsFromHistory();
+        List<Treatment> treatments = TreatmentsPlugin.getPlugin().getTreatmentsFromHistory();
 
         for (int tx = 0; tx < treatments.size(); tx++) {
             Treatment t = treatments.get(tx);
@@ -278,7 +278,7 @@ public class GraphData {
         }
 
         // ProfileSwitch
-        List<ProfileSwitch> profileSwitches = MainApp.getConfigBuilder().getProfileSwitchesFromHistory().getList();
+        List<ProfileSwitch> profileSwitches = TreatmentsPlugin.getPlugin().getProfileSwitchesFromHistory().getList();
 
         for (int tx = 0; tx < profileSwitches.size(); tx++) {
             DataPointWithLabelInterface t = profileSwitches.get(tx);
@@ -288,7 +288,7 @@ public class GraphData {
 
         // Extended bolus
         if (!ConfigBuilderPlugin.getActivePump().isFakingTempsByExtendedBoluses()) {
-            List<ExtendedBolus> extendedBoluses = MainApp.getConfigBuilder().getExtendedBolusesFromHistory().getList();
+            List<ExtendedBolus> extendedBoluses = TreatmentsPlugin.getPlugin().getExtendedBolusesFromHistory().getList();
 
             for (int tx = 0; tx < extendedBoluses.size(); tx++) {
                 DataPointWithLabelInterface t = extendedBoluses.get(tx);
@@ -334,7 +334,10 @@ public class GraphData {
         Scale iobScale = new Scale();
 
         for (long time = fromTime; time <= toTime; time += 5 * 60 * 1000L) {
-            double iob = IobCobCalculatorPlugin.getPlugin().calculateFromTreatmentsAndTempsSynchronized(time).iob;
+            Profile profile = MainApp.getConfigBuilder().getProfile(time);
+            double iob = 0d;
+            if (profile != null)
+                iob = IobCobCalculatorPlugin.getPlugin().calculateFromTreatmentsAndTempsSynchronized(time, profile).iob;
             if (Math.abs(lastIob - iob) > 0.02) {
                 if (Math.abs(lastIob - iob) > 0.2)
                     iobArray.add(new ScaledDataPoint(time, lastIob, iobScale));
@@ -556,15 +559,15 @@ public class GraphData {
     public void performUpdate() {
         // clear old data
         graph.getSeries().clear();
-        
+
         // add precalculated series
-        for (Series s: series) {
+        for (Series s : series) {
             if (!s.isEmpty()) {
                 s.onGraphViewAttached(graph);
                 graph.getSeries().add(s);
             }
         }
-        
+
         // draw it
         graph.onDataChanged(false, false);
     }

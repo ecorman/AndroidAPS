@@ -7,15 +7,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
-import info.nightscout.androidaps.MainApp;
 import info.nightscout.androidaps.R;
 import info.nightscout.androidaps.db.BgReading;
 import info.nightscout.androidaps.db.TempTarget;
 import info.nightscout.androidaps.interfaces.TreatmentsInterface;
-import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
 import info.nightscout.androidaps.plugins.IobCobCalculator.AutosensData;
 import info.nightscout.androidaps.plugins.IobCobCalculator.IobCobCalculatorPlugin;
 import info.nightscout.androidaps.plugins.Loop.LoopPlugin;
+import info.nightscout.androidaps.plugins.Treatments.TreatmentsPlugin;
 import info.nightscout.utils.BolusWizard;
 import info.nightscout.utils.DateUtil;
 import info.nightscout.utils.SP;
@@ -102,7 +101,7 @@ public class QuickWizardEntry {
         }
 
         // Basal IOB
-        TreatmentsInterface treatments = MainApp.getConfigBuilder();
+        TreatmentsInterface treatments = TreatmentsPlugin.getPlugin();
         treatments.updateTotalIOBTempBasals();
         IobTotal basalIob = treatments.getLastCalculationTempBasals().round();
         boolean basalIOB = false;
@@ -119,8 +118,8 @@ public class QuickWizardEntry {
         if (useSuperBolus() == YES && SP.getBoolean(R.string.key_usesuperbolus, false)) {
             superBolus = true;
         }
-        final LoopPlugin activeloop = ConfigBuilderPlugin.getActiveLoop();
-        if (activeloop != null && activeloop.isEnabled(activeloop.getType()) && activeloop.isSuperBolus())
+        final LoopPlugin loopPlugin = LoopPlugin.getPlugin();
+        if (loopPlugin.isEnabled(loopPlugin.getType()) && loopPlugin.isSuperBolus())
             superBolus = false;
 
         // Trend

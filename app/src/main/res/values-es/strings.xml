@@ -204,7 +204,7 @@
     <string name="waitingforpumpresult">Esperando resultado</string>
     <string name="smscommunicator_allowednumbers">Números de teléfono permitidos</string>
     <string name="smscommunicator_allowednumbers_summary">XXXXXXXXXX +; + YYYYYYYYYY</string>
-    <string formatted="false" name="smscommunicator_bolusreplywithcode">Para entregar bolo %.2fU responder con código% s</string>
+    <string formatted="false" name="smscommunicator_bolusreplywithcode">Para entregar bolo %.2fU responder con código %s</string>
     <string name="smscommunicator_bolusfailed">Bolo falló</string>
     <string formatted="false" name="bolusdelivered">Bolo %.2fU entregado con éxito</string>
     <string formatted="false" name="bolusdelivering">Entregando %.2fU</string>
@@ -249,7 +249,7 @@
     <string name="occlusion">Oclusión</string>
     <string name="overview_bolusprogress_stop">Detener</string>
     <string name="overview_bolusprogress_stoppressed">Parar pulsado</string>
-    <string formatted="false" name="overview_bolusprogress_goingtodeliver">Se entregará % .2fU</string>
+    <string formatted="false" name="overview_bolusprogress_goingtodeliver">Se entregará %.2fU</string>
     <string name="objectives_0_objective">Configuración de visualización y monitoreo, y el análisis de los basales y ratios</string>
     <string name="objectives_0_gate">Comprobar que los datos de BG están disponibles en Nightscout, y que los datos de la bomba de insulina se están subiendo</string>
     <string name="objectives_1_objective">Empezar con bucle abierto</string>
@@ -423,7 +423,7 @@
     <string name="nav_show_logcat">mostrar log</string>
     <string name="overview_calibration">Calibracion</string>
     <string name="overview_calibration_bg_label">Calibracion</string>
-    <string name="send_calibration" formatted="false">Mandar calibracion %.lf a xDrip?</string>
+    <string name="send_calibration" formatted="false">Mandar calibracion %.1f a xDrip?</string>
     <string name="xdripnotinstalled">xDrip+ no instalado</string>
     <string name="calibrationsent">Calibracion mandada a xDrip</string>
     <string name="smscommunicator_remotecalibrationnotallowed">Calibracion remota no admitida</string>
@@ -585,7 +585,7 @@
     <string name="free_peak_oref">Free-Peak Oref</string>
     <string name="rapid_acting_oref">Rapid-Acting Oref</string>
     <string name="ultrarapid_oref">Ultra-Rapid Oref</string>
-    <string name="dia_too_short" formatted="false">DIA de %s demasiado corto - usando %s!</string>
+    <string name="dia_too_short" formatted="false">DIA de %f demasiado corto - usando %f!</string>
     <string name="activate_profile">ACTIVAR PERFIL</string>
     <string name="date">Fecha</string>
     <string name="invalid">INVALIDO</string>
@@ -676,7 +676,6 @@
     <string name="zerovalueinprofile" formatted="false">Perfil invalido: %s</string>
     <string name="combo_programming_bolus">Programando bomba para emitir bolo</string>
     <string name="combo_refresh">Actualizar</string>
-    <string name="combo_tdds">TDDS</string>
     <string name="combo_pump_state_label">Estado</string>
     <string name="combo_pump_activity_label">Actividad</string>
     <string name="combo_no_pump_connection" formatted="false">Ninguna coneccnion por %d min</string>
@@ -694,21 +693,14 @@
     <string name="bolus_frequency_exceeded">Un bolo de mismo valor ha sido dado durante el pasado minuto. Para evitar bolos dobles y asegurarse contra bugs esto no es permitido.</string>
     <string name="combo_pump_connected_now">Ahora</string>
     <string name="combo_activity_reading_pump_history">Leiendo historia bomba</string>
-    <string name="combo_pump_alerts">Alarmas</string>
     <string name="combo_activity_setting_basal_profile">" Activando perfil base "</string>
     <string name="combo_pump_cartridge_low_warrning">"Nivel del deposito bajo "</string>
     <string name="combo_pump_battery_low_warrning">Bateria casi agotada</string>
     <string name="combo_is_in_error_state" formatted="false">La bomba muesta el error E%d: %s</string>
-    <string name="combo_no_alert_data_note">Para leer historial de los errores, pincha unos segundo el boton \"ALARMAS\" ATENCION: esto puede causar un bug. La bomba no vuelve a conectarse - necesitas pulsar un boton en la misma bomba para reiniciarse. Deberias evitar esto.</string>
-    <string name="combo_no_tdd_data_note">Para leer el hisorial TDD de la bomba pulsa el boton TDDS unso segundos. ATENCION: esto puede causar un bug. La bomba no vuelve a conectarse - necesitas pulsar un boton en la misma bomba para reiniciarse. Deberias evitar esto.</string>
-    <string name="combo_tdd_minimum" formatted="false">Mínimo: %3.1f U</string>
-    <string name="combo_tdd_average" formatted="false">Media: %3.1f U</string>
-    <string name="combo_tdd_maximum" formatted="false">Máximo: %3.1f U</string>
     <string name="combo_reservoir_low">Bajo</string>
     <string name="combo_reservoir_empty">Vacio</string>
     <string name="combo_reservoir_normal">Normal</string>
     <string name="combo_notification_check_time_date">Se necesita actualizar reloj de la bomba</string>
-    <string name="combo_history">Historial</string>
     <string name="combo_warning">Alerta</string>
     <string name="combo_pump_tbr_cancelled_warrning">TBR cancelada, advertencia acceptada</string>
     <string name="combo_error_no_bolus_delivered">Emision del bolo fallado. Ningún bolo se ha emitido. Para asegurarse, por favor controle la bomba para evitar bolo doble. Para evitar bugs no se reinician bolos automaticamente.</string>

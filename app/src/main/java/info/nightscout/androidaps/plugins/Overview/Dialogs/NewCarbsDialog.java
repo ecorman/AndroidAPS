@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ import info.nightscout.androidaps.db.Source;
 import info.nightscout.androidaps.db.TempTarget;
 import info.nightscout.androidaps.interfaces.Constraint;
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
+import info.nightscout.androidaps.plugins.Treatments.TreatmentsPlugin;
 import info.nightscout.androidaps.queue.Callback;
 import info.nightscout.utils.DateUtil;
 import info.nightscout.utils.DecimalFormatter;
@@ -67,6 +69,8 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
     private Button fav1Button;
     private Button fav2Button;
     private Button fav3Button;
+
+    private EditText notesEdit;
 
     private static final int FAV1_DEFAULT = 5;
     private static final int FAV2_DEFAULT = 10;
@@ -155,6 +159,8 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
         fav3Button = view.findViewById(R.id.newcarbs_plus3);
         fav3Button.setOnClickListener(this);
         fav3Button.setText(toSignedString(SP.getInt(R.string.key_carbs_button_increment_3, FAV3_DEFAULT)));
+
+        notesEdit = (EditText) view.findViewById(R.id.newcarbs_notes);
 
         setCancelable(true);
         getDialog().setCanceledOnTouchOutside(false);
@@ -357,6 +363,7 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
             final int finalEatingSoonTTDuration = eatingSoonTTDuration;
             final double finalHypoTT = hypoTT;
             final int finalHypoTTDuration = hypoTTDuration;
+            final String finalNotes = notesEdit.getText().toString();
 
             if (!initialEventTime.equals(eventTime)) {
                 actions.add("Time: " + DateUtil.dateAndTimeString(eventTime));
@@ -380,32 +387,32 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
                     accepted = true;
 
                     if (startActivityTTCheckbox.isChecked()) {
-                        TempTarget tempTarget = new TempTarget();
-                        tempTarget.date = System.currentTimeMillis();
-                        tempTarget.durationInMinutes = finalActivityTTDuration;
-                        tempTarget.reason = MainApp.gs(R.string.activity);
-                        tempTarget.source = Source.USER;
-                        tempTarget.low = Profile.toMgdl(finalActivityTT, currentProfile.getUnits());
-                        tempTarget.high = Profile.toMgdl(finalActivityTT, currentProfile.getUnits());
-                        MainApp.getDbHelper().createOrUpdate(tempTarget);
+                        TempTarget tempTarget = new TempTarget()
+                                .date(System.currentTimeMillis())
+                                .duration(finalActivityTTDuration)
+                                .reason(MainApp.gs(R.string.activity))
+                                .source(Source.USER)
+                                .low(Profile.toMgdl(finalActivityTT, currentProfile.getUnits()))
+                                .high(Profile.toMgdl(finalActivityTT, currentProfile.getUnits()));
+                        TreatmentsPlugin.getPlugin().addToHistoryTempTarget(tempTarget);
                     } else if (startEatingSoonTTCheckbox.isChecked()) {
-                        TempTarget tempTarget = new TempTarget();
-                        tempTarget.date = System.currentTimeMillis();
-                        tempTarget.durationInMinutes = finalEatingSoonTTDuration;
-                        tempTarget.reason = MainApp.gs(R.string.eatingsoon);
-                        tempTarget.source = Source.USER;
-                        tempTarget.low = Profile.toMgdl(finalEatigSoonTT, currentProfile.getUnits());
-                        tempTarget.high = Profile.toMgdl(finalEatigSoonTT, currentProfile.getUnits());
-                        MainApp.getDbHelper().createOrUpdate(tempTarget);
+                        TempTarget tempTarget = new TempTarget()
+                                .date(System.currentTimeMillis())
+                                .duration(finalEatingSoonTTDuration)
+                                .reason(MainApp.gs(R.string.eatingsoon))
+                                .source(Source.USER)
+                                .low(Profile.toMgdl(finalEatigSoonTT, currentProfile.getUnits()))
+                                .high(Profile.toMgdl(finalEatigSoonTT, currentProfile.getUnits()));
+                        TreatmentsPlugin.getPlugin().addToHistoryTempTarget(tempTarget);
                     } else if (startHypoTTCheckbox.isChecked()) {
-                        TempTarget tempTarget = new TempTarget();
-                        tempTarget.date = System.currentTimeMillis();
-                        tempTarget.durationInMinutes = finalHypoTTDuration;
-                        tempTarget.reason = MainApp.gs(R.string.hypo);
-                        tempTarget.source = Source.USER;
-                        tempTarget.low = Profile.toMgdl(finalHypoTT, currentProfile.getUnits());
-                        tempTarget.high = Profile.toMgdl(finalHypoTT, currentProfile.getUnits());
-                        MainApp.getDbHelper().createOrUpdate(tempTarget);
+                        TempTarget tempTarget = new TempTarget()
+                                .date(System.currentTimeMillis())
+                                .duration(finalHypoTTDuration)
+                                .reason(MainApp.gs(R.string.hypo))
+                                .source(Source.USER)
+                                .low(Profile.toMgdl(finalHypoTT, currentProfile.getUnits()))
+                                .high(Profile.toMgdl(finalHypoTT, currentProfile.getUnits()));
+                        TreatmentsPlugin.getPlugin().addToHistoryTempTarget(tempTarget);
                     }
 
                     if (finalCarbsAfterConstraints > 0) {
@@ -415,6 +422,7 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
                         detailedBolusInfo.carbs = finalCarbsAfterConstraints;
                         detailedBolusInfo.context = context;
                         detailedBolusInfo.source = Source.USER;
+                        detailedBolusInfo.notes = finalNotes;
                         if (ConfigBuilderPlugin.getActivePump().getPumpDescription().storesCarbInfo) {
                             ConfigBuilderPlugin.getCommandQueue().bolus(detailedBolusInfo, new Callback() {
                                 @Override
@@ -430,7 +438,7 @@ public class NewCarbsDialog extends DialogFragment implements OnClickListener, D
                                 }
                             });
                         } else {
-                            MainApp.getConfigBuilder().addToHistoryTreatment(detailedBolusInfo);
+                            TreatmentsPlugin.getPlugin().addToHistoryTreatment(detailedBolusInfo);
                         }
                     }
                 }

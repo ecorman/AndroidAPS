@@ -75,13 +75,13 @@ import info.nightscout.androidaps.queue.commands.CommandTempBasalPercent;
 public class CommandQueue {
     private static Logger log = LoggerFactory.getLogger(CommandQueue.class);
 
-    private LinkedList<Command> queue = new LinkedList<>();
+    private final LinkedList<Command> queue = new LinkedList<>();
     protected Command performing;
 
     private QueueThread thread = null;
 
     private PumpEnactResult executingNowError() {
-        return new PumpEnactResult().success(false).enacted(false).comment(MainApp.sResources.getString(R.string.executingrightnow));
+        return new PumpEnactResult().success(false).enacted(false).comment(MainApp.gs(R.string.executingrightnow));
     }
 
     public boolean isRunning(Command.CommandType type) {
@@ -162,18 +162,33 @@ public class CommandQueue {
         tempCommandQueue.readStatus(reason, callback);
     }
 
+    public synchronized boolean bolusInQueue(){
+        if(isRunning(Command.CommandType.BOLUS)) return true;
+        for (int i = 0; i < queue.size(); i++) {
+            if (queue.get(i).commandType == Command.CommandType.BOLUS) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // returns true if command is queued
-    public boolean bolus(DetailedBolusInfo detailedBolusInfo, Callback callback) {
+    public synchronized boolean bolus(DetailedBolusInfo detailedBolusInfo, Callback callback) {
         Command.CommandType type = detailedBolusInfo.isSMB ? Command.CommandType.SMB_BOLUS : Command.CommandType.BOLUS;
 
-        if (isRunning(type)) {
-            if (callback != null)
-                callback.result(executingNowError()).run();
-            return false;
-        }
+        if(type.equals(Command.CommandType.BOLUS) && detailedBolusInfo.carbs > 0 && detailedBolusInfo.insulin == 0){
+            type = Command.CommandType.CARBS_ONLY_TREATMENT;
+            //Carbs only can be added in parallel as they can be "in the future".
+        } else {
+            if (isRunning(type)) {
+                if (callback != null)
+                    callback.result(executingNowError()).run();
+                return false;
+            }
 
-        // remove all unfinished boluses
-        removeAll(type);
+            // remove all unfinished boluses
+            removeAll(type);
+        }
 
         // apply constraints
         detailedBolusInfo.insulin = MainApp.getConstraintChecker().applyBolusConstraints(new Constraint<>(detailedBolusInfo.insulin)).value();
@@ -183,12 +198,14 @@ public class CommandQueue {
         if (detailedBolusInfo.isSMB) {
             add(new CommandSMBBolus(detailedBolusInfo, callback));
         } else {
-            add(new CommandBolus(detailedBolusInfo, callback));
-            // Bring up bolus progress dialog (start here, so the dialog is shown when the bolus is requested,
-            // not when the Bolus command is starting. The command closes the dialog upon completion).
-            showBolusProgressDialog(detailedBolusInfo.insulin, detailedBolusInfo.context);
-            // Notify Wear about upcoming bolus
-            MainApp.bus().post(new EventBolusRequested(detailedBolusInfo.insulin));
+            add(new CommandBolus(detailedBolusInfo, callback, type));
+            if(type.equals(Command.CommandType.BOLUS)) {
+                // Bring up bolus progress dialog (start here, so the dialog is shown when the bolus is requested,
+                // not when the Bolus command is starting. The command closes the dialog upon completion).
+                showBolusProgressDialog(detailedBolusInfo.insulin, detailedBolusInfo.context);
+                // Notify Wear about upcoming bolus
+                MainApp.bus().post(new EventBolusRequested(detailedBolusInfo.insulin));
+            }
         }
 
         notifyAboutNewCommand();
@@ -198,7 +215,7 @@ public class CommandQueue {
 
     // returns true if command is queued
     public boolean tempBasalAbsolute(double absoluteRate, int durationInMinutes, boolean enforceNew, Profile profile, Callback callback) {
-        if (isRunning(Command.CommandType.TEMPBASAL)) {
+        if (!enforceNew && isRunning(Command.CommandType.TEMPBASAL)) {
             if (callback != null)
                 callback.result(executingNowError()).run();
             return false;
@@ -219,7 +236,7 @@ public class CommandQueue {
 
     // returns true if command is queued
     public boolean tempBasalPercent(Integer percent, int durationInMinutes, boolean enforceNew, Profile profile, Callback callback) {
-        if (isRunning(Command.CommandType.TEMPBASAL)) {
+        if (!enforceNew && isRunning(Command.CommandType.TEMPBASAL)) {
             if (callback != null)
                 callback.result(executingNowError()).run();
             return false;
@@ -261,7 +278,7 @@ public class CommandQueue {
 
     // returns true if command is queued
     public boolean cancelTempBasal(boolean enforceNew, Callback callback) {
-        if (isRunning(Command.CommandType.TEMPBASAL)) {
+        if (!enforceNew && isRunning(Command.CommandType.TEMPBASAL)) {
             if (callback != null)
                 callback.result(executingNowError()).run();
             return false;
@@ -307,10 +324,10 @@ public class CommandQueue {
         }
 
         if (!MainApp.isEngineeringModeOrRelease()) {
-            Notification notification = new Notification(Notification.NOT_ENG_MODE_OR_RELEASE, MainApp.sResources.getString(R.string.not_eng_mode_or_release), Notification.URGENT);
+            Notification notification = new Notification(Notification.NOT_ENG_MODE_OR_RELEASE, MainApp.gs(R.string.not_eng_mode_or_release), Notification.URGENT);
             MainApp.bus().post(new EventNewNotification(notification));
             if (callback != null)
-                callback.result(new PumpEnactResult().success(false).comment(MainApp.sResources.getString(R.string.not_eng_mode_or_release))).run();
+                callback.result(new PumpEnactResult().success(false).comment(MainApp.gs(R.string.not_eng_mode_or_release))).run();
             return false;
         }
 
@@ -320,10 +337,10 @@ public class CommandQueue {
 
         for (Profile.BasalValue basalValue : basalValues) {
             if (basalValue.value < pump.getPumpDescription().basalMinimumRate) {
-                Notification notification = new Notification(Notification.BASAL_VALUE_BELOW_MINIMUM, MainApp.sResources.getString(R.string.basalvaluebelowminimum), Notification.URGENT);
+                Notification notification = new Notification(Notification.BASAL_VALUE_BELOW_MINIMUM, MainApp.gs(R.string.basalvaluebelowminimum), Notification.URGENT);
                 MainApp.bus().post(new EventNewNotification(notification));
                 if (callback != null)
-                    callback.result(new PumpEnactResult().success(false).comment(MainApp.sResources.getString(R.string.basalvaluebelowminimum))).run();
+                    callback.result(new PumpEnactResult().success(false).comment(MainApp.gs(R.string.basalvaluebelowminimum))).run();
                 return false;
             }
         }

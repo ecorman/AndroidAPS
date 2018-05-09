@@ -57,7 +57,7 @@ public class Treatment implements DataPointWithLabelInterface {
     public boolean isSMB = false;
 
     @DatabaseField
-    public int insulinInterfaceID = InsulinInterface.FASTACTINGINSULIN; // currently unused, will be used in the future
+    public int insulinInterfaceID = InsulinInterface.OREF_RAPID_ACTING; // currently unused, will be used in the future
     @DatabaseField
     public double dia = Constants.defaultDIA; // currently unused, will be used in the future
 
@@ -186,16 +186,11 @@ public class Treatment implements DataPointWithLabelInterface {
     @Override
     public int getColor() {
         if (isSMB)
-            return MainApp.sResources.getColor(R.color.tempbasal);
+            return MainApp.gc(R.color.tempbasal);
         else if (isValid)
             return Color.CYAN;
         else
             return MainApp.instance().getResources().getColor(android.R.color.holo_red_light);
-    }
-
-    @Override
-    public int getSecondColor() {
-        return 0;
     }
 
     @Override

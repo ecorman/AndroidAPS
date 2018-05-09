@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.db;
 
+import android.content.res.Resources;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -195,8 +197,7 @@ public class BgReading implements DataPointWithLabelInterface {
 
     @Override
     public float getSize() {
-        boolean isTablet = MainApp.sResources.getBoolean(R.bool.isTablet);
-        return isTablet ? 8 : 5;
+        return 1;
     }
 
     @Override
@@ -210,28 +211,27 @@ public class BgReading implements DataPointWithLabelInterface {
         if (highLine < 1) {
             highLine = Profile.fromMgdlToUnits(OverviewPlugin.bgTargetHigh, units);
         }
-        int color = MainApp.sResources.getColor(R.color.inrange);
+        int color = MainApp.gc(R.color.inrange);
         if (isPrediction())
-            color = MainApp.sResources.getColor(R.color.prediction);
+            return getPredectionColor();
         else if (valueToUnits(units) < lowLine)
-            color = MainApp.sResources.getColor(R.color.low);
+            color = MainApp.gc(R.color.low);
         else if (valueToUnits(units) > highLine)
-            color = MainApp.sResources.getColor(R.color.high);
+            color = MainApp.gc(R.color.high);
         return color;
     }
 
-    @Override
-    public int getSecondColor() {
+    public int getPredectionColor() {
         if (isIOBPrediction)
-            return MainApp.sResources.getColor(R.color.iob);
+            return MainApp.gc(R.color.iob);
         if (isCOBPrediction)
-            return MainApp.sResources.getColor(R.color.cob);
+            return MainApp.gc(R.color.cob);
         if (isaCOBPrediction)
-            return 0x80FFFFFF & MainApp.sResources.getColor(R.color.cob);
+            return 0x80FFFFFF & MainApp.gc(R.color.cob);
         if (isUAMPrediction)
-            return MainApp.sResources.getColor(R.color.uam);
+            return MainApp.gc(R.color.uam);
         if (isZTPrediction)
-            return MainApp.sResources.getColor(R.color.zt);
+            return MainApp.gc(R.color.zt);
         return R.color.mdtp_white;
     }
 

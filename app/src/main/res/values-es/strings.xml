@@ -186,7 +186,7 @@
     <string name="de_lang">German</string>
     <string name="openapsma_maxbasal_summary">Este valor es llamado max basal en el contexto OpenAPS</string>
     <string name="openapsma_maxiob_summary">Este valor es llamado Max Iob en el contexto OpenAPS\nEsta es la máxima insulina en [U] APS puede entregar a la vez.</string>
-    <string name="bg_lang">Bulgarian</string>
+    <string name="bg_lang">Bulgaro</string>
     <string name="dismiss">DESCARTAR</string>
     <string name="language">Idioma</string>
     <string name="danarpump">DanaR</string>
@@ -328,7 +328,7 @@
     <string name="error_phone_not_valid">Número de teléfono inválido</string>
     <string name="waitingforpump">Esperando bomba</string>
     <string name="it_lang">Italian</string>
-    <string name="nl_lang">hollandes</string>
+    <string name="nl_lang">holandes</string>
     <string name="el_lang">Griego</string>
     <string name="ru_lang">Ruso</string>
     <string name="sv_lang">Sueco</string>
@@ -382,7 +382,7 @@
     <string name="openapsma_scriptdebugdata_label">Script debug</string>
     <string name="openapsama_useautosens">Usar característica AMA autosens</string>
     <string name="refresheventsfromnightscout">Renovar datos desde NS</string>
-    <string name="eatingsoon">ComidendoPronto</string>
+    <string name="eatingsoon">Comer Pronto</string>
     <string name="hypo">Hipo</string>
     <string name="activity">Actividad</string>
     <string name="removerecord">Eliminar registro:</string>
@@ -419,14 +419,14 @@
     <string name="short_tabtitles">Tab titulo corto</string>
     <string name="always_use_shortavg">Usa siempre delta media corto en vez de delta simple</string>
     <string name="always_use_shortavg_summary">Recomendado si los datos de origen no filtrados como xDrip son inestables.</string>
-    <string name="advancedsettings_title">Ajustes avancados</string>
+    <string name="advancedsettings_title">Ajustes avanzados</string>
     <string name="danar_model" formatted="false">Modelo: %02X Protocolo: %02X Codigo: %02X</string>
     <string name="profile">Perfiles</string>
     <string name="openapsama_max_daily_safety_multiplier_summary">"Valor por defecte: 3 Esto es valor de seguridad establecido pos OpenAPS. Limita tu base al máximo de x3 de tu base máxima. No necesitas cambiar esto, pero debes tener en cuenta, que esto se esta discutiento sobre „3 x max diario; 4x actual“ pro razones de seguridad. "</string>
     <string name="openapsama_current_basal_safety_multiplier_summary">"Ajuste pro defecto: 4 Esto es la otra mitad de los ajustes de seguridad de OpenAPS y la otra mitad de \"3x max diario, 4x actual\". Esto significa, que tu base no puede ser mas alta que el numero que multiplica tu base. Esto es para evitar que las personas se encuentren en situaciones peligrosas por aumentar mucho la base sin entender el algoritmo del sistema. El ajuste por defecto es x4. La mayoría de las personas nunca tendra que cambiar estos ajustes, si no debe modificar otros ajustes en la terapia. "</string>
     <string name="openapsama_autosens_max_summary">"Ajuste por defecto: 1.2\nEsto es un multilicador para autosens (y pronto autotune) para poner un 20% limite máximo a la cota de autosens ratio, la que determina cuantos ajustes autosens puede hacer a la base, a cuanto puede ajustar ISF y a cuanto puede bajar el objective de glucosa.  "</string>
     <string name="openapsama_autosens_min_summary">Ajuste pro defecto: 0.7\nEl otro lade de limitaciones de seguridad de autosens, limitando a cuanto puede bajar la base y a cuanto puede subir ISF y BG objectivos.</string>
-    <string name="openapsama_autosens_adjusttargets_summary">Ajuste por defecto: true\nEsto se usa para permitir autosens a ajustar objectivos BG ademas de ISF y bases.</string>
+    <string name="openapsama_autosens_adjusttargets_summary">Ajuste por defecto: true\nEsto se usa para permitir autosens a ajustar objectivos BG además de ISF y bases.</string>
     <string name="openapsama_bolussnooze_dia_divisor_summary">Ajuste por defecto: 2 \nDormir bolo es iniciado después de proveder un bolo para comida, así el loop no interactuará con low temps cuando acabas de comer. El ajuste pro defecto es 2; quiere decir con el DIA de 3 h el bolo será dormido por fases por 1.5 h (3DIA/2).</string>
     <string name="openapsama_min_5m_carbimpact_summary">"Ajustes pro defecto: 3.0\nEsto es un ajuste pro defecto para la absorción de carbohidratos pro 5 minutos. Por defecto se espera 3mg/dl/5min. Esto afecta la velocidad de reducción de COB y cuanta absorción se usa para calcular el BG futuro previsto, si la glucosa diminua mas de lo previsto o aumenta mas de lo previsto. "</string>
     <string name="openapsama_link_to_preferncejson_doc_txt">"Atención!\nNormalment no tienes que editar los valores a continuación. Por favor PINCHA AQUI y LEE el texto y PROCURA ENTENDER antes de cambiar alguno de los valores. "</string>
@@ -530,7 +530,7 @@
     <string name="xdripstatus">xDrip Statusline (reloj)</string>
     <string name="xdripstatus_shortname">xds</string>
     <string name="wear_showbgi_title">Mostrar BGI</string>
-    <string name="wear_showbgi_summary">agregar BGI a status line</string>
+    <string name="wear_showbgi_summary">agregar BGI a línea de estado</string>
     <string name="ns_noupload">Datos no mandados a NS</string>
     <string name="ns_noupload_summary">Todos los datos mandados a NS son borrados. AAPS esta conectado a NS pero no hay cambios en NS</string>
     <string name="basal_step">Nivel base</string>
@@ -617,11 +617,11 @@
     <string name="bolusspeed">Velocidad bolo</string>
     <string name="danar_setbasalstep001">Poner paso base a 0.01 U/h</string>
     <string name="serialnumber">Numero de serie</string>
-    <string name="careportal_newnstreatment_percentage_label">Porcientos</string>
+    <string name="careportal_newnstreatment_percentage_label">Porcentaje</string>
     <string name="careportal_newnstreatment_timeshift_label">Cambio de tiepmo</string>
     <string name="default_temptargets">Ojbectivo temporal por defecto</string>
-    <string name="eatingsoon_duration">duración comiendopronto</string>
-    <string name="eatingsoon_target">objectivo comiendopronto</string>
+    <string name="eatingsoon_duration">duración comer pronto</string>
+    <string name="eatingsoon_target">objectivo comer pronto</string>
     <string name="activity_duration">duración actividad</string>
     <string name="activity_target">objectivo actividad</string>
     <string name="danar_history_prime">Cebado</string>
@@ -932,7 +932,6 @@
     <string name="alert_m26">"Mantenimiento M26: cambio de cartucho no completado "</string>
     <string name="alert_m25">"Mantenimiento M25: tiempo de prestamo finalizado - final de la operación "</string>
     <string name="alert_m24">"Mantenimiento M24: Oclusión "</string>
-    <string name="es_lang">Español</string>
     <string name="ns_chargingonly">Solo si cargando</string>
     <string name="ns_autobackfill_title">Autobackfill BG</string>
     <string name="wear_wizard_settings">Asistente configuración</string>
@@ -940,4 +939,5 @@
     <string name="wear_display_settings">Mostrar configuración</string>
     <string name="wear_general_settings">Configuración general</string>
     <string name="ro_lang">Rumano</string>
+    <string name="es_lang">Español</string>
 </resources>

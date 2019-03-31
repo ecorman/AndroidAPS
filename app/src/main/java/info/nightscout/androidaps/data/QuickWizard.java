@@ -1,15 +1,12 @@
 package info.nightscout.androidaps.data;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.nightscout.androidaps.MainApp;
+import info.nightscout.androidaps.utils.SP;
 
 /**
  * Created by mike on 12.10.2016.
@@ -25,10 +22,7 @@ public class QuickWizard {
     }
 
     public void save() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainApp.instance().getApplicationContext());
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("QuickWizard", storage.toString());
-        editor.apply();
+        SP.putString("QuickWizard", storage.toString());
     }
 
     public int size() {

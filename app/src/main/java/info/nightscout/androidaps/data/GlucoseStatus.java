@@ -1,28 +1,20 @@
 package info.nightscout.androidaps.data;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.text.Html;
-import android.text.Spanned;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import info.nightscout.androidaps.MainApp;
 import info.nightscout.androidaps.R;
 import info.nightscout.androidaps.db.BgReading;
-import info.nightscout.utils.DecimalFormatter;
-import info.nightscout.utils.Round;
+import info.nightscout.androidaps.plugins.iob.iobCobCalculator.IobCobCalculatorPlugin;
+import info.nightscout.androidaps.utils.DateUtil;
+import info.nightscout.androidaps.utils.DecimalFormatter;
+import info.nightscout.androidaps.utils.Round;
 
 /**
  * Created by mike on 04.01.2017.
@@ -35,21 +27,15 @@ public class GlucoseStatus {
     public double avgdelta = 0d;
     public double short_avgdelta = 0d;
     public double long_avgdelta = 0d;
+    public long date = 0L;
 
 
     @Override
     public String toString() {
-        return MainApp.sResources.getString(R.string.glucose) + " " + DecimalFormatter.to0Decimal(glucose) + " mg/dl\n" +
-                MainApp.sResources.getString(R.string.delta) + " " + DecimalFormatter.to0Decimal(delta) + " mg/dl\n" +
-                MainApp.sResources.getString(R.string.short_avgdelta) + " " + DecimalFormatter.to2Decimal(short_avgdelta) + " mg/dl\n" +
-                MainApp.sResources.getString(R.string.long_avgdelta) + " " + DecimalFormatter.to2Decimal(long_avgdelta) + " mg/dl";
-    }
-
-    public Spanned toSpanned() {
-        return Html.fromHtml("<b>" + MainApp.sResources.getString(R.string.glucose) + "</b>: " + DecimalFormatter.to0Decimal(glucose) + " mg/dl<br>" +
-                "<b>" + MainApp.sResources.getString(R.string.delta) + "</b>: " + DecimalFormatter.to0Decimal(delta) + " mg/dl<br>" +
-                "<b>" + MainApp.sResources.getString(R.string.short_avgdelta) + "</b>: " + DecimalFormatter.to2Decimal(short_avgdelta) + " mg/dl<br>" +
-                "<b>" + MainApp.sResources.getString(R.string.long_avgdelta) + "</b>: " + DecimalFormatter.to2Decimal(long_avgdelta) + " mg/dl");
+        return MainApp.gs(R.string.glucose) + " " + DecimalFormatter.to0Decimal(glucose) + " mg/dl\n" +
+                MainApp.gs(R.string.delta) + " " + DecimalFormatter.to0Decimal(delta) + " mg/dl\n" +
+                MainApp.gs(R.string.short_avgdelta) + " " + DecimalFormatter.to2Decimal(short_avgdelta) + " mg/dl\n" +
+                MainApp.gs(R.string.long_avgdelta) + " " + DecimalFormatter.to2Decimal(long_avgdelta) + " mg/dl";
     }
 
     public GlucoseStatus() {
@@ -65,20 +51,30 @@ public class GlucoseStatus {
     }
 
 
-
     @Nullable
-    public static GlucoseStatus getGlucoseStatusData(){
+    public static GlucoseStatus getGlucoseStatusData() {
         return getGlucoseStatusData(false);
     }
 
     @Nullable
     public static GlucoseStatus getGlucoseStatusData(boolean allowOldData) {
         // load 45min
-        long fromtime = (long) (System.currentTimeMillis() - 60 * 1000L * 45);
-        List<BgReading> data = MainApp.getDbHelper().getBgreadingsDataFromTime(fromtime, false);
+        //long fromtime = DateUtil.now() - 60 * 1000L * 45;
+        //List<BgReading> data = MainApp.getDbHelper().getBgreadingsDataFromTime(fromtime, false);
+
+        List<BgReading> data = IobCobCalculatorPlugin.getPlugin().getBgReadings();
+
+        if (data == null)
+            return null;
 
         int sizeRecords = data.size();
-        if (sizeRecords < 1 || (data.get(0).date < System.currentTimeMillis() - 7 * 60 * 1000L && !allowOldData)) {
+        if (sizeRecords == 0) {
+            return null;
+        }
+
+        sizeRecords = Math.min(sizeRecords, 9);
+
+        if (data.get(0).date < DateUtil.now() - 7 * 60 * 1000L && !allowOldData) {
             return null;
         }
 
@@ -86,13 +82,14 @@ public class GlucoseStatus {
         long now_date = now.date;
         double change;
 
-        if (sizeRecords < 2) {
+        if (sizeRecords == 1) {
             GlucoseStatus status = new GlucoseStatus();
             status.glucose = now.value;
             status.short_avgdelta = 0d;
             status.delta = 0d;
             status.long_avgdelta = 0d;
             status.avgdelta = 0d; // for OpenAPS MA
+            status.date = now_date;
             return status.round();
         }
 
@@ -100,7 +97,7 @@ public class GlucoseStatus {
         ArrayList<Double> short_deltas = new ArrayList<Double>();
         ArrayList<Double> long_deltas = new ArrayList<Double>();
 
-        for (int i = 1; i < data.size(); i++) {
+        for (int i = 1; i < sizeRecords; i++) {
             if (data.get(i).value > 38) {
                 BgReading then = data.get(i);
                 long then_date = then.date;
@@ -133,6 +130,7 @@ public class GlucoseStatus {
 
         GlucoseStatus status = new GlucoseStatus();
         status.glucose = now.value;
+        status.date = now_date;
 
         status.short_avgdelta = average(short_deltas);
 
